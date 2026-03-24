@@ -1,2 +1,2 @@
 # HideOS
-Custom operating system for x86_320 architecture
+Custom operating system for x86_32 architecture

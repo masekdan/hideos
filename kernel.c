@@ -14,6 +14,30 @@
 int cursor_x = 0;
 int cursor_y = 0;
 
+char inb(short port)
+{
+    char result;
+    __asm__ volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+void outb(short port, char value)
+{
+    __asm__ volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
+short inw(short port)
+{
+    short result;
+    __asm__ volatile("inw %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+void outw(short port, short value)
+{
+    __asm__ volatile("outw %0, %1" : : "a"(value), "Nd"(port));
+}
+
 
 unsigned char port_byte_in(unsigned short port)
 {
