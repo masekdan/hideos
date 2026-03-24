@@ -20,6 +20,5 @@ truncate -s 32k image.bin
 # clean
 rm kernel.bin
 rm kernel.elf
-rm link.ld
 rm kernel.o
 rm boot.bin

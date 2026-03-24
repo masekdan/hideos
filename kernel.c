@@ -26,14 +26,24 @@ void port_byte_out(unsigned short port, unsigned char data)
     __asm__ volatile("out %%al, %%dx": : "a" (data), "d" (port));
 }
 
-int get_cursor()
+/*int get_cursor()
 {
     port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_HIGH_REG);
     int offset = port_byte_in(VGA_DATA_REGISTER);
 
     port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_LOW_REG);
-    offset != port_byte_in(VGA_DATA_REGISTER);
+    offset |= port_byte_in(VGA_DATA_REGISTER);
 
+    return offset * 2;
+}*/
+
+int get_cursor()
+{
+    int offset = 0;
+    port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_HIGH_REG);
+    offset = (port_byte_in(VGA_DATA_REGISTER) << 8); 
+    port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_LOW_REG);
+    offset |= port_byte_in(VGA_DATA_REGISTER);
     return offset * 2;
 }
 
@@ -45,6 +55,12 @@ void set_cursor(int offset)
     port_byte_out(VGA_DATA_REGISTER, (offset & 0xFF));
 }
 
+void update_cursor(int x, int y)
+{
+    int offset = y * 80 + x;
+    set_cursor(offset);
+}
+
 void vga_clear_screen() {
     char *video_mem = VIDEO_MEMORY;
 
@@ -53,8 +69,7 @@ void vga_clear_screen() {
         video_mem[i * 2 + 1] = DEFAULT_COLOR;
     }
 
-    cursor_x = 0;
-    cursor_y = 0;
+    update_cursor(0,0);
 }
 
 void vga_scroll(int offset) {
@@ -91,13 +106,13 @@ void vga_putchar(char c)
     {
         cursor_x = 0;
         cursor_y++;
+        update_cursor(cursor_x,cursor_y);
         return;
     }
     else
     {
-        video_memory[(cursor_y* VIDEO_WIDTH + cursor_x)*2] = c;
-        video_memory[(cursor_y* VIDEO_WIDTH + cursor_x)*2+1] = DEFAULT_COLOR;
-        // vidmem[offset] = c;  offset = get_cursor()
+        video_memory[get_cursor()] = c;
+        video_memory[get_cursor()+1] = DEFAULT_COLOR;
     }
     if (cursor_x<VIDEO_WIDTH)
     {
@@ -108,6 +123,7 @@ void vga_putchar(char c)
         cursor_x = 0;
         cursor_y++;
     }
+    update_cursor(cursor_x,cursor_y);
     
 }
 
@@ -124,6 +140,7 @@ void vga_print(char* str)
 void __attribute__((section(".text.entry"))) kernel_main()
 {
     
+
     vga_clear_screen();
 
     vga_print("Welcome to HideOS\n");
@@ -138,13 +155,6 @@ void __attribute__((section(".text.entry"))) kernel_main()
     vga_print(" |  __  | |/ _` |/ _ \\ |  | |\\___ \\ \n");
     vga_print(" | |  | | | (_| |  __/ |__| |____) |\n");
     vga_print(" |_|  |_|_|\\__,_|\\___|\\____/|_____/ \n");
-
     
-    vga_scroll(2);
-    //char* vidmem = VIDEO_MEMORY;
-
-    //vidmem[get_cursor()] = 'G';
-    //*vidmem = *vidmem << 80*8;
-
     while (1) {}
 }
