@@ -14,6 +14,7 @@
 int cursor_x = 0;
 int cursor_y = 0;
 
+
 unsigned char port_byte_in(unsigned short port)
 {
     unsigned char result;
@@ -25,17 +26,6 @@ void port_byte_out(unsigned short port, unsigned char data)
 {
     __asm__ volatile("out %%al, %%dx": : "a" (data), "d" (port));
 }
-
-/*int get_cursor()
-{
-    port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_HIGH_REG);
-    int offset = port_byte_in(VGA_DATA_REGISTER);
-
-    port_byte_out(VGA_CTRL_REGISTER, VGA_CUR_LOW_REG);
-    offset |= port_byte_in(VGA_DATA_REGISTER);
-
-    return offset * 2;
-}*/
 
 int get_cursor()
 {
@@ -140,7 +130,6 @@ void vga_print(char* str)
 void __attribute__((section(".text.entry"))) kernel_main()
 {
     
-
     vga_clear_screen();
 
     vga_print("Welcome to HideOS\n");
