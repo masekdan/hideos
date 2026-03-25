@@ -1,1 +1,7 @@
 image.bin
+boot.bin
+kernel.bin
+kernel.elf
+arch/*.o
+drivers/*.o
+kernel/*.o
