@@ -2,11 +2,11 @@
 
 int cli_parse(char* line, char* argv[], int max_args);
 
-void cli_readline()
+void cli_readline(char* buffer, int max_len)
 {
 
     unsigned char sc;
-    char buffer[128];
+    
 
     sc = 0x00;
     while (sc != 0x1C)
@@ -44,26 +44,33 @@ void cli_readline()
         }
         i++;
     }
-
-    vga_print("\nBuffer content: ");
-    vga_print(buffer);
-    vga_print("\n");
-    
 }
 
 int cli_parse(char* line, char* argv[], int max_args)
 {
-
+    skip_ws(line);
+    if (!strcmp(line,"clear"))
+    {
+        vga_clear_screen();
+    }
+    else
+    {
+        vga_print("\nUnknown command!\n");
+    }
 }
 
 
 
 void cli_loop()
 {
+
+    char buffer[128];
+
     while (1)
     {
         vga_print("$ ");
-        cli_readline();
+        cli_readline(buffer,128);
+        cli_parse(buffer,0,3);
     }
     
 }

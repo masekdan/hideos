@@ -36,6 +36,8 @@ void vga_clear_screen()
         video_mem[i * 2 + 1] = DEFAULT_COLOR;
     }
 
+    cursor_x = 0;
+    cursor_y = 0;
     update_cursor(0, 0);
 }
 
