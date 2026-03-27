@@ -24,23 +24,7 @@ __attribute__((section(".text.entry"))) void kernel_main()
     vga_print(" |_|  |_|_|\\__,_|\\___|\\____/|_____/ \n");
 
     vga_print("\n\nPress help to view command list:\n");
-    vga_print("$ ");
 
-    unsigned char sc;
-    char buffer[128];
-    while (1)
-    {
-        sc = keyboard_get_char();
-        if (sc != 0)
-        {
-            if (sc == 0x1C)
-            {
-                cli_readline(buffer,128);
-            }
-            else
-            {
-                vga_putchar(scancodes[sc]);
-            }
-        }
-    }
+    cli_loop();
+
 }

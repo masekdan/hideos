@@ -1,10 +1,24 @@
 #include "cli.h"
-#include "arch/io_ports.h"
-#include "drivers/vga.h"
 
+int cli_parse(char* line, char* argv[], int max_args);
 
-void cli_readline(char* buffer, int max_len)
+void cli_readline()
 {
+
+    unsigned char sc;
+    char buffer[128];
+
+    sc = 0x00;
+    while (sc != 0x1C)
+    {
+        sc = keyboard_get_char();
+        if (sc != 0 && sc != 0x1C)
+        {
+            vga_putchar(scancodes[sc]);
+        }
+    }
+    
+
     char* vid_mem = VIDEO_MEMORY;
 
     int line_end = get_cursor();
@@ -19,7 +33,7 @@ void cli_readline(char* buffer, int max_len)
     int i = 0;
 
     line_start +=2;
-    while (i<max_len)
+    while (i<128)
     {
         buffer[i] = vid_mem[line_start];
         line_start += 2;
@@ -33,8 +47,23 @@ void cli_readline(char* buffer, int max_len)
 
     vga_print("\nBuffer content: ");
     vga_print(buffer);
-    vga_print("\n$ ");
+    vga_print("\n");
     
 }
 
-int cli_parse(char* line, char* argv[], int max_args);
+int cli_parse(char* line, char* argv[], int max_args)
+{
+
+}
+
+
+
+void cli_loop()
+{
+    while (1)
+    {
+        vga_print("$ ");
+        cli_readline();
+    }
+    
+}
