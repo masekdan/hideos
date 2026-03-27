@@ -5,7 +5,7 @@
 #include "drivers/keyboard.h"
 #include "drivers/serial.h"
 
-#include "kernel/cli.h"
+#include "shell/cli.h"
 
 __attribute__((section(".text.entry"))) void kernel_main()
 {

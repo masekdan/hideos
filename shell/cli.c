@@ -49,14 +49,15 @@ void cli_readline(char* buffer, int max_len)
 int cli_parse(char* line, char* argv[], int max_args)
 {
     skip_ws(line);
-    if (!strcmp(line,"clear"))
+    for (int i =0; shell_commands[i].name != 0; i++)
     {
-        vga_clear_screen();
+        if (strcmp(shell_commands[i].name,line)==0)
+        {
+            shell_commands[i].func(line);
+            return 0;
+        }
     }
-    else
-    {
-        vga_print("\nUnknown command!\n");
-    }
+    vga_print("\nUnknown command!");
 }
 
 

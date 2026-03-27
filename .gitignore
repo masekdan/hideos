@@ -5,3 +5,5 @@ kernel.elf
 arch/*.o
 drivers/*.o
 kernel/*.o
+stdlib/*.o
+shell/*.o
