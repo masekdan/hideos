@@ -113,7 +113,7 @@ unsigned char keyboard_get_char()
     if (scancode < 128) {
         if (scancode == 0x0E)
         {
-            //backspace();
+            backspace();
             return 0;
         }
         return scancode;
@@ -122,14 +122,20 @@ unsigned char keyboard_get_char()
     return 0;
 }
 
-/*void backspace()
+void backspace()
 {
     char* vidmem = VIDEO_MEMORY;
     
-    if (cursor_x==0)
-        cursor_y--;
-    cursor_x--;
+    if (cursor_x > 2)
+    {
+        cursor_x--;
+    }
+    else {
+        return;
+    }
+
     update_cursor(cursor_x,cursor_y);
     vidmem[get_cursor()] = ' ';
-}*/
+    
+}
 

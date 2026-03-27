@@ -3,15 +3,15 @@
 
 #include "arch/io.h"
 #include "arch/io_ports.h"
+#include "drivers/vga.h"
 
 unsigned char keyboard_get_scancode();
 
 unsigned char keyboard_get_char();
 
-//void backspace();
+void backspace();
 
 
 extern char scancodes[128];
-
 
 #endif
