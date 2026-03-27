@@ -11,7 +11,7 @@ void cli_readline(char* buffer, int max_len)
     int line_start =  get_cursor();
     
     char terminal = vid_mem[line_start];
-    while (terminal != 'x')
+    while (terminal != '$')
     {
         line_start -= 2;
         terminal = vid_mem[line_start];
@@ -31,9 +31,9 @@ void cli_readline(char* buffer, int max_len)
         i++;
     }
 
-    vga_print("Buffer content: ");
+    vga_print("\nBuffer content: ");
     vga_print(buffer);
-    vga_print("\n");
+    vga_print("\n$ ");
     
 }
 
