@@ -26,11 +26,11 @@ __attribute__((section(".text.entry"))) void kernel_main()
 
     vga_print("\n\nPress help to view command list:\n");
 
-    int b = atoi("-58");
+    float b = atof("-85.5");
 
-    if (b==58)
+    if (b==-85.5)
     {
-        vga_print("Atoi funguje\n");
+        vga_print("Atof funguje\n");
     }
 
     cli_loop();
