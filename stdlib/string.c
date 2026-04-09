@@ -30,3 +30,42 @@ void skip_ws(char* str)
         *writer = '\0';
     }
 }
+
+char* strtok(char* buffer, char del)
+{
+
+}
+
+int atoi(char* str)
+{
+    int i = 0;
+    int result = 0;
+
+    int negative = 1;
+    skip_ws(str);
+
+    if (str[0]=='-')
+    {
+        negative = -1;
+        i++;
+    }
+
+    while (str[i]!=0)
+    {
+        result *= 10;
+        result = result + (str[i]-'0');
+        i++;
+    }
+
+    if (negative==-1)
+    {
+        result *= -1;
+    }
+
+    return result;
+}
+
+float atof(char* str)
+{
+
+}

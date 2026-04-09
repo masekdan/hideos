@@ -4,6 +4,7 @@
 #include "drivers/vga.h"
 #include "drivers/keyboard.h"
 #include "drivers/serial.h"
+#include "stdlib/string.h"
 
 #include "shell/cli.h"
 
@@ -24,6 +25,13 @@ __attribute__((section(".text.entry"))) void kernel_main()
     vga_print(" |_|  |_|_|\\__,_|\\___|\\____/|_____/ \n");
 
     vga_print("\n\nPress help to view command list:\n");
+
+    int b = atoi("-58");
+
+    if (b==58)
+    {
+        vga_print("Atoi funguje\n");
+    }
 
     cli_loop();
 

@@ -57,7 +57,7 @@ int cli_parse(char* line, char* argv[], int max_args)
             return 0;
         }
     }
-    vga_print("\nUnknown command!");
+    vga_print("\nUnknown command!\n");
 }
 
 
