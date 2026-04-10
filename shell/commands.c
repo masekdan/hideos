@@ -7,7 +7,7 @@ command_t shell_commands[] = {
     {0, 0, 0} // Ukončovací prvek
 };
 
-void cmd_help(char *args)
+void cmd_help(char *args[])
 {
     vga_print("\nAvailable commands:\n");
     for (int i = 0; shell_commands[i].name != 0; i++)
@@ -20,11 +20,19 @@ void cmd_help(char *args)
     }
 }
 
-void cmd_clear(char *args)
+void cmd_clear(char *args[])
 {
+    
     vga_clear_screen();
+    if (strcmp(args[1],"hot")==0)
+    {
+     vga_print("tsts\n");   
+    }
 }
 
-void cmd_echo(char *args)
+void cmd_echo(char *args[])
 {
+    vga_print("\n\"");
+    vga_print(args[1]);
+    vga_print("\"\n");
 }

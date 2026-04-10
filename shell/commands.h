@@ -2,6 +2,7 @@
 #define COMMANDS_H
 
 #include "drivers/vga.h"
+#include "stdlib/string.h"
 
 // structures
 
@@ -9,14 +10,14 @@ typedef struct
 {
     char* name;
     char* description;
-    void (*func)(char* args);
+    void (*func)(char* args[]);
 } command_t;
 
 // functions
 
-void cmd_help(char* args);
-void cmd_clear(char* args);
-void cmd_echo(char* args);
+void cmd_help(char* args[]);
+void cmd_clear(char* args[]);
+void cmd_echo(char* args[]);
 
 // variables
 

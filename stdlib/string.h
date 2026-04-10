@@ -5,7 +5,7 @@ int strcmp(char* str1, char* str2);
 
 void skip_ws(char* str);
 
-char* strtok(char* buffer, char del);
+char* strtok(char* str, const char delim);
 
 int atoi(char* str);
 

@@ -31,9 +31,35 @@ void skip_ws(char* str)
     }
 }
 
-char* strtok(char* buffer, char del)
+char* strtok(char* str, const char delim)
 {
+    static char* next_token = 0;
 
+    if (str != 0)
+    {
+        next_token = str;
+    }
+
+    if (next_token == 0 || *next_token == '\0') {
+        return 0;
+    }
+
+    char * start = next_token;
+
+    while (*next_token !=0)
+    {
+        if (*next_token == delim)
+        {
+            *next_token = '\0';
+            next_token++;
+            return start;
+        }
+        next_token++;
+    }
+
+    return start;
+
+    
 }
 
 int atoi(char* str)

@@ -11,6 +11,8 @@ void cli_readline(char* buffer, int max_len);
 
 int cli_parse(char* line, char* argv[], int max_args);
 
+void cli_execute(char* argv[]);
+
 void cli_loop();
 
 #endif
