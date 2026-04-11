@@ -19,6 +19,8 @@ void cmd_help(char* args[]);
 void cmd_clear(char* args[]);
 void cmd_echo(char* args[]);
 
+void read(char* args[]);
+
 // variables
 
 extern command_t shell_commands[];

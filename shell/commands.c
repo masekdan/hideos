@@ -4,6 +4,7 @@ command_t shell_commands[] = {
     {"help", "Zobrazi tuto napovedu", cmd_help},
     {"clear", "Vycisti obrazovku", cmd_clear},
     {"echo", "Vypise text", cmd_echo},
+    {"read", "Reads block from HDD",read},
     {0, 0, 0} // Ukončovací prvek
 };
 
@@ -26,13 +27,25 @@ void cmd_clear(char *args[])
     vga_clear_screen();
     if (strcmp(args[1],"hot")==0)
     {
-     vga_print("tsts\n");   
+     vga_print("Super hot clean!\n");   
     }
 }
 
 void cmd_echo(char *args[])
 {
     vga_print("\n\"");
-    vga_print(args[1]);
+    for (int i = 1; i<16;i++)
+    {
+        if (args[i]!=0)
+        {
+            vga_print(args[i]);
+            vga_putchar(' ');
+        }
+    }
     vga_print("\"\n");
+}
+
+void read(char *args[])
+{
+    
 }
