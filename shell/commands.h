@@ -4,6 +4,8 @@
 #include "drivers/vga.h"
 #include "stdlib/string.h"
 
+#include "drivers/ide.h"
+
 // structures
 
 typedef struct
@@ -19,7 +21,8 @@ void cmd_help(char* args[]);
 void cmd_clear(char* args[]);
 void cmd_echo(char* args[]);
 
-void read(char* args[]);
+void cmd_read(char* args[]);
+void cmd_write(char* args[]);
 
 // variables
 

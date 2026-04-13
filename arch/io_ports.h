@@ -36,5 +36,6 @@
 #define ATA_PRIMARY_COMM_STAT    0x1f7
 
 #define ATA_CMD_READ_PIO         0x20
+#define ATA_CMD_WRITE_PIO        0x30
 
 #endif

@@ -82,13 +82,13 @@ void cli_execute(char* argv[])
 void cli_loop()
 {
 
-    char buffer[128];
+    char buffer[64];
     char* argv[16];
 
     while (1)
     {
         vga_print("$ ");
-        cli_readline(buffer,128);
+        cli_readline(buffer,64);
         cli_parse(buffer,argv,16);
         cli_execute(argv);
     }
