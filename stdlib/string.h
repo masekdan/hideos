@@ -11,4 +11,8 @@ int atoi(char* str);
 
 float atof(char* str);
 
+void* memset(void* dest, int ch, unsigned int count);
+
+void* memcpy(void* dest, const void* src, unsigned int count);
+
 #endif

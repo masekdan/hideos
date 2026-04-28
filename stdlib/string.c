@@ -139,42 +139,21 @@ float atof(char* str)
     return result;
 }
 
-/*
-static double parseDouble(std::string &string_number)
+void* memset(void* dest, int ch, unsigned int count) 
 {
-    double result = 0;
-    bool negative = false;
-    bool decimal = false;
-    double shift = 0.1;
-
-    for (char c : string_number)
-    {
-        if (c == '-')
-        {
-            negative = true;
-        }
-        else if (c == '.')
-        {
-            decimal = true;
-        }
-        else if (isdigit(c))
-        {
-            if (decimal)
-            {
-                result += (c - 48) * shift;
-                shift /= 10;
-            }
-            else
-            {
-                result = result * 10 + (c - 48);
-            }
-        }
+    unsigned char* ptr = (unsigned char*)dest;
+    while (count--) {
+        *ptr++ = (unsigned char)ch;
     }
+    return dest;
+}
 
-    if (negative)
-    {
-        result *= -1;
+void* memcpy(void* dest, const void* src, unsigned int count)
+{
+    unsigned char* d = (unsigned char*)dest;
+    const unsigned char* s = (const unsigned char*)src;
+    while (count--) {
+        *d++ = *s++;
     }
-
-    return result;
-}*/
+    return dest;
+}
