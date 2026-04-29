@@ -1,5 +1,8 @@
 #include "fat16.h"
 #include "drivers/ide.h"
+#include "stdlib/string.h"
+#include "drivers/serial.h"
+#include "drivers/vga.h"
 
 // Všechny tyto offsety jsou nyní v SEKTORECH (LBA)
 static unsigned int partition_lba_start = 0;
@@ -15,7 +18,63 @@ static unsigned short current_dir_cluster = 0;
 
 void fat_init(unsigned char drive)
 {
-    unsigned short sector_buffer[256];
+    unsigned char sector_buffer[512];
 
     ata_read_sector(drive,0,sector_buffer);
+
+    PartitionTable* pt = (PartitionTable*)((unsigned char*)sector_buffer + 0x1BE);
+
+    partition_lba_start = pt[0].start_sector;
+
+    ata_read_sector(drive,partition_lba_start,sector_buffer);
+    memcpy(&bs, sector_buffer, sizeof(Fat16BootSector));
+
+    fat_lba_start = partition_lba_start + bs.reserved_sectors;
+
+    root_lba_start = fat_lba_start + (bs.number_of_fats * bs.fat_size_sectors);
+
+    root_dir_sectors = (bs.root_dir_entries * 32 + (bs.sector_size - 1)) / bs.sector_size;
+
+    data_lba_start = root_lba_start + root_dir_sectors;
+
+    sectors_per_cluster = bs.sectors_per_cluster;
+
+    current_dir_cluster = 0; // we are in root
+
+    serial_print("FAT16 Initialized\n");
+    
+}
+
+void list_dir()
+{
+    Fat16Entry entries[16]; // 512 bajtů / 32 bajtů na záznam = 16 záznamů na sektor
+    unsigned char sector_buffer[512];
+
+    vga_print("\nListing directory\n");
+
+    if (current_dir_cluster == 0)
+    {
+        for (unsigned int i =0 ; i<(bs.root_dir_entries*32/512);i++)
+        {
+            ata_read_sector(1, root_lba_start + 1, sector_buffer);
+            Fat16Entry* sector_entries = (Fat16Entry*)sector_buffer;
+
+            for (int j = 0; j<16;j++)
+            {
+                Fat16Entry entry = sector_entries[j];
+
+                if (entry.filename[0] == 0x00)
+                {
+                    serial_print("Done\n");
+                    return;
+                }
+                if (entry.filename[0] == 0xE5) continue;
+                if (entry.attributes == 0x0F) continue;
+
+                vga_print(entry.filename);
+                vga_print("\n");
+            }
+        }
+    }
+
 }

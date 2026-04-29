@@ -88,7 +88,7 @@ void cli_loop()
     while (1)
     {
         vga_print("$ ");
-        cli_readline(buffer,64);
+        cli_readline(buffer,128);
         cli_parse(buffer,argv,16);
         cli_execute(argv);
     }

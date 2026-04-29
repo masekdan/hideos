@@ -8,3 +8,4 @@ kernel/*.o
 stdlib/*.o
 shell/*.o
 fs/*.o
+sd.img

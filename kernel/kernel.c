@@ -7,6 +7,7 @@
 #include "stdlib/string.h"
 
 #include "shell/cli.h"
+#include "fs/fat16.h"
 
 __attribute__((section(".text.entry"))) void kernel_main()
 {
@@ -25,6 +26,9 @@ __attribute__((section(".text.entry"))) void kernel_main()
     vga_print(" |_|  |_|_|\\__,_|\\___|\\____/|_____/ \n");
 
     vga_print("\n\nPress help to view command list:\n");
+
+    fat_init(1);
+    list_dir();
 
     cli_loop();
 
