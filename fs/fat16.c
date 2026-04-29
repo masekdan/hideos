@@ -45,6 +45,21 @@ void fat_init(unsigned char drive)
     
 }
 
+void print_filename(Fat16Entry* entry) {
+    char name[9]; // 8 znaků + nula
+    char ext[4];  // 3 znaky + nula
+
+    for(int i = 0; i < 8; i++) name[i] = entry->filename[i];
+    name[8] = '\0';
+
+    for(int i = 0; i < 3; i++) ext[i] = entry->ext[i];
+    ext[3] = '\0';
+
+    vga_print(name);
+    vga_print(".");
+    vga_print(ext);
+}
+
 void list_dir()
 {
     Fat16Entry entries[16]; // 512 bajtů / 32 bajtů na záznam = 16 záznamů na sektor
@@ -56,12 +71,13 @@ void list_dir()
     {
         for (unsigned int i =0 ; i<(bs.root_dir_entries*32/512);i++)
         {
-            ata_read_sector(1, root_lba_start + 1, sector_buffer);
+            ata_read_sector(1, root_lba_start + i, sector_buffer);
             Fat16Entry* sector_entries = (Fat16Entry*)sector_buffer;
 
             for (int j = 0; j<16;j++)
             {
                 Fat16Entry entry = sector_entries[j];
+
 
                 if (entry.filename[0] == 0x00)
                 {
@@ -71,7 +87,7 @@ void list_dir()
                 if (entry.filename[0] == 0xE5) continue;
                 if (entry.attributes == 0x0F) continue;
 
-                vga_print(entry.filename);
+                print_filename(&entry);
                 vga_print("\n");
             }
         }
