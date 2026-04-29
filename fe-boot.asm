@@ -26,7 +26,7 @@ load_sector:
     mov bx, 0x1000  ; memory where sectors will be placed kernel
 
     mov ah, 0x02    ; read desiderd sectors into memory
-    mov al, 10      ; load 10 sectors
+    mov al, 54      ; load 10 sectors
     mov ch, 0       ; cylinder 0
     mov cl, 0x02    ; CC SSSSSS sector = 2
     mov dl, [ BOOT_DRIVE ]    ; drive number = 0 default drive C

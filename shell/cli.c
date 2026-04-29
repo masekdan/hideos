@@ -82,7 +82,7 @@ void cli_execute(char* argv[])
 void cli_loop()
 {
 
-    char buffer[64];
+    char buffer[128];
     char* argv[16];
 
     while (1)

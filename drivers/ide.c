@@ -1,9 +1,11 @@
 #include "ide.h"
 
-void ata_read_sector(unsigned int lba, unsigned short* buffer)
+void ata_read_sector(unsigned char drive, unsigned int lba, unsigned short* buffer)
 {
-    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | (lba >> 24) & 0x0F);
+    
+    unsigned char drive_sel = (drive == 0) ? 0xE0 : 0xF0;
 
+    outb(ATA_PRIMARY_DRIVE_SEL, drive_sel | ((lba >> 24) & 0x0F));
 
     outb(ATA_PRIMARY_SECCOUNT, 1);
     outb(ATA_PRIMARY_LBA_LOW, (unsigned char)lba);
@@ -21,9 +23,12 @@ void ata_read_sector(unsigned int lba, unsigned short* buffer)
     }
 }
 
-void ata_write_sector(unsigned int lba, unsigned short* buffer)
+void ata_write_sector(unsigned char drive ,unsigned int lba, unsigned short* buffer)
 {
-    outb(ATA_PRIMARY_DRIVE_SEL, 0xE0 | ((lba >> 24) & 0x0F));
+
+    unsigned char drive_sel = (drive == 0) ? 0xE0 : 0xF0;
+
+    outb(ATA_PRIMARY_DRIVE_SEL, drive_sel | ((lba >> 24) & 0x0F));
 
     outb(ATA_PRIMARY_SECCOUNT, 1);
     outb(ATA_PRIMARY_LBA_LOW,  (unsigned char)lba);

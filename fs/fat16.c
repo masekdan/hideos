@@ -17,5 +17,5 @@ void fat_init(unsigned char drive)
 {
     unsigned short sector_buffer[256];
 
-    ata_read_sector(0,sector_buffer);
+    ata_read_sector(drive,0,sector_buffer);
 }

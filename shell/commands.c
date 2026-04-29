@@ -61,7 +61,7 @@ void cmd_read(char *args[])
     vga_print(args[1]);
     vga_print("... \n");
 
-    ata_read_sector(lba,target_buffer);
+    ata_read_sector(0,lba,target_buffer);
 
     vga_print("Done\n");
 }
@@ -85,7 +85,7 @@ void cmd_write(char* args[])
     vga_print(args[1]);
     vga_print("... \n");
 
-    ata_write_sector(lba, source_buffer);
+    ata_write_sector(0,lba, source_buffer);
 
     vga_print("Done!\n");
 }
