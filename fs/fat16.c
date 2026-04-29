@@ -62,7 +62,7 @@ void print_filename(Fat16Entry* entry) {
 
 void list_dir()
 {
-    Fat16Entry entries[16]; // 512 bajtů / 32 bajtů na záznam = 16 záznamů na sektor
+    Fat16Entry entries[16];
     unsigned char sector_buffer[512];
 
     vga_print("\nListing directory\n");
@@ -91,6 +91,54 @@ void list_dir()
                 vga_print("\n");
             }
         }
+        return;
     }
 
+    unsigned short cluster = current_dir_cluster;
+    while (cluster < 0xFFF8)
+    {
+        unsigned int cluster_lba = data_lba_start + (cluster - 2) * sectors_per_cluster;
+
+        for (unsigned int s = 0; s<sectors_per_cluster; s++)
+        {
+            ata_read_sector(1, cluster_lba+s ,sector_buffer);
+            Fat16Entry* sector_entries = (Fat16Entry*)sector_buffer;
+
+            for (int j = 0; j<16;j++)
+            {
+                Fat16Entry entry = sector_entries[j];
+
+
+                if (entry.filename[0] == 0x00)
+                {
+                    serial_print("Done\n");
+                    return;
+                }
+                if (entry.filename[0] == 0xE5) continue;
+                if (entry.attributes == 0x0F) continue;
+
+                print_filename(&entry);
+                vga_print("\n");
+            }
+        }
+    }
+
+}
+
+
+int change_dir(const char* name)
+{
+    Fat16Entry entry;
+
+    if (strcmp(name,"..")==0)
+    {
+        if (current_dir_cluster == 0)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    current_dir_cluster = entry.starting_cluster;
+    return 1;
 }

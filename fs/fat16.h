@@ -50,3 +50,5 @@ typedef struct {
 void fat_init(unsigned char drive);
 
 void list_dir();
+
+int change_dir(const char* name);
