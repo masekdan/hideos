@@ -21,8 +21,16 @@ void cmd_help(char* args[]);
 void cmd_clear(char* args[]);
 void cmd_echo(char* args[]);
 
+
+// lba cmds
 void cmd_read(char* args[]);
 void cmd_write(char* args[]);
+
+// mem commands
+
+void cmd_dump(char* args[]);
+void cmd_load(char* args[]);
+void cmd_run(char* args[]);
 
 // variables
 

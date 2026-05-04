@@ -1,5 +1,6 @@
 
 #define MAX_DISK_SIZE (8*1024*1024)
+#define FAT16_PARTITION_LBA 2048
 
 typedef struct {
     unsigned char first_byte;
@@ -8,7 +9,7 @@ typedef struct {
     unsigned char end_chs[3];
     unsigned int start_sector;
     unsigned int length_sectors;
-} __attribute((packed)) PartitionTable;
+} __attribute__((packed)) PartitionTable;
 
 typedef struct {
     unsigned char jmp[3];
@@ -31,9 +32,9 @@ typedef struct {
     unsigned int volume_id;
     char volume_label[11];
     char fs_type[8];
-    char boot_code[448];
+    // char boot_code[448];
     unsigned short boot_sector_signature;
-} __attribute((packed)) Fat16BootSector;
+} __attribute__((packed)) Fat16BootSector;
 
 typedef struct {
     unsigned char filename[8];
@@ -44,7 +45,7 @@ typedef struct {
     unsigned short modify_date;
     unsigned short starting_cluster;
     unsigned int file_size;
-} __attribute((packed)) Fat16Entry;
+} __attribute__((packed)) Fat16Entry;
 
 
 void fat_init(unsigned char drive);

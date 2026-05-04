@@ -1,5 +1,7 @@
 #include "string.h"
 
+#include "drivers/vga.h"
+
 int strcmp(char* str1, char* str2)
 {
    while (*str1 && (*str1 == *str2)) {
@@ -139,6 +141,29 @@ float atof(char* str)
     return result;
 }
 
+unsigned int xtoi(const char *str)
+{
+    unsigned int res = 0;
+    
+    if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X')) {
+        str += 2;
+    }
+
+    while (*str) {
+        unsigned char c = *str++;
+        res <<= 4;
+        
+        if (c >= '0' && c <= '9') res += (c - '0');
+        else if (c >= 'a' && c <= 'f') res += (c - 'a' + 10);
+        else if (c >= 'A' && c <= 'F') res += (c - 'A' + 10);
+        else {
+            res >>= 4;
+            break;
+        }
+    }
+    return res;
+}
+
 void* memset(void* dest, int ch, unsigned int count) 
 {
     unsigned char* ptr = (unsigned char*)dest;
@@ -156,4 +181,61 @@ void* memcpy(void* dest, const void* src, unsigned int count)
         *d++ = *s++;
     }
     return dest;
+}
+
+void print_hex8(unsigned char value)
+{
+    char *hex_chars = "0123456789ABCDEF";
+    char out[3];
+    
+    out[0] = hex_chars[(value >> 4) & 0x0F];
+    out[1] = hex_chars[value & 0x0F];
+    out[2] = '\0';
+
+    vga_print(out);
+}
+
+void print_hex32(unsigned int value)
+{
+    char *hex_chars = "0123456789ABCDEF";
+    char out[9];
+    
+    // Projdeme všech 8 nibblů (4 bity každý)
+    for (int i = 7; i >= 0; i--) {
+        out[i] = hex_chars[value & 0x0F];
+        value >>= 4;
+    }
+    out[8] = '\0';
+
+    vga_print("0x");
+    vga_print(out);
+}
+
+void print_int(int n) {
+    char buf[12]; // Dostatečné pro -2,147,483,648 (11 znaků + null)
+    int i = 0;
+
+    // Ošetření nuly
+    if (n == 0) {
+        vga_print("0");
+        return;
+    }
+
+    // Ošetření záporných čísel
+    if (n < 0) {
+        vga_print("-");
+        n = -n;
+    }
+
+    // Rozklad na číslice (odzadu)
+    while (n > 0) {
+        buf[i++] = (n % 10) + '0';
+        n /= 10;
+    }
+
+    // Výpis v opačném pořadí
+    for (int j = i - 1; j >= 0; j--) {
+        char c[2] = {buf[j], 0};
+        vga_print(c);
+    }
 }

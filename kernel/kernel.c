@@ -27,8 +27,7 @@ __attribute__((section(".text.entry"))) void kernel_main()
 
     vga_print("\n\nPress help to view command list:\n");
 
-    fat_init(1);
-    change_dir("ADR2");
+    fat_init(0);
     list_dir();
 
     cli_loop();
