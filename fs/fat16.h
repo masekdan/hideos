@@ -56,6 +56,6 @@ void list_dir();
 
 int change_dir(const char* dir);
 
-
+void read_file(const char* fname);
 
 #endif

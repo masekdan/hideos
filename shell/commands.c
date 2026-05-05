@@ -11,6 +11,7 @@ command_t shell_commands[] = {
     {"run","Run program from memory",cmd_run},
     {"ls","List current directory",cmd_ls},
     {"cd","Changes directory",cmd_cd},
+    {"cat","Writed file content to console",cmd_cat},
     {0, 0, 0} // Ukončovací prvek
 };
 
@@ -187,4 +188,14 @@ void cmd_cd(char* args[])
     }
 
     change_dir(args[1]);
+}
+
+void cmd_cat(char* args[])
+{
+    if (args[1] == 0)
+    {
+        vga_print("\nNo file given\n");
+        return;
+    }
+    read_file(args[1]);
 }

@@ -38,6 +38,7 @@ void cmd_run(char* args[]);
 
 void cmd_ls(char* args[]);
 void cmd_cd(char* args[]);
+void cmd_cat(char* args[]);
 
 // variables
 

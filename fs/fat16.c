@@ -216,11 +216,13 @@ int change_dir(const char *dir)
     {
         if (current_dir_cluster==0)
         {
+            vga_print("\nAlready in root\n");
             return 1;
         }
 
         if (find_file("..", &entry))
         {
+            vga_print("\nDirectory changed\n");
             current_dir_cluster = entry.starting_cluster;
             return 1;
         }
@@ -312,4 +314,44 @@ void list_dir()
                 break;
         }
     }
+}
+
+void read_file(const char* fname)
+{
+    Fat16Entry entry;
+
+    if (find_file(fname, &entry)==0)
+    {
+        vga_print("\nFile not found\n");
+        return;
+    }
+    vga_print("\n");
+    unsigned short cluster = entry.starting_cluster;
+    unsigned int remaining = entry.file_size;
+    unsigned char buf[512];
+
+    while (cluster < 0xFFF8 && remaining > 0)
+    {
+        unsigned int cluster_lba = data_lba_start + ((cluster - 2)*sectors_per_cluster);
+        
+        for (unsigned char s = 0; s < sectors_per_cluster && remaining > 0;s++)
+        {
+            ata_read_sector(0, cluster_lba + s, buf);
+
+            unsigned int to_print = (remaining < 512) ? remaining : 512;
+
+            for (unsigned int i = 0; i< to_print;i++)
+            {
+                vga_putchar(buf[i]);
+            }
+
+            remaining -= to_print;
+        }
+
+        cluster = get_fat_entry(cluster);
+
+        if (cluster == 0) break;
+        
+    }
+    vga_print("\n");
 }
