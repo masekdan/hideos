@@ -3,7 +3,13 @@
 
 int strcmp(char* str1, char* str2);
 
+int strncmp(char *str1, char* str2, unsigned int size);
+
 void skip_ws(char* str);
+
+void to_upper(char* str);
+
+void to_lower(char* str);
 
 char* strtok(char* str, const char delim);
 

@@ -10,6 +10,36 @@ int strcmp(char* str1, char* str2)
     return *(unsigned char *)str1 - *(unsigned char *)str2;
 }
 
+int strncmp(char *str1, char* str2, unsigned int size)
+{
+    for (unsigned int i = 0; i<size; i++)
+    {
+        if (str1[i]!=str2[i])
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void to_upper(char* str)
+{
+    while (*str) {
+        if (*str >= 'a' && *str <= 'z')
+        *str = *str - 32;
+        str++;
+    }
+}
+
+void to_lower(char* str)
+{
+    while (*str) {
+        if (*str >= 'A' && *str <= 'Z')
+        *str = *str + 32;
+        str++;
+    }
+}
+
 void skip_ws(char* str)
 {
     if (str == 0)

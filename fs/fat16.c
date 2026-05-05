@@ -69,52 +69,86 @@ unsigned short get_fat_entry(unsigned int cluster)
     return *(unsigned short *)&buf[fat_offset];
 }
 
-// 1 = jsou, 0 nejsou
-int compare_fat_name(const char *user_name, const char *fat_name)
+void split_filename(const char *fname, char out_name[8], char out_ext[3])
 {
-    char formatted[11];
+    // ..
+    to_upper(fname);
 
-    for (int i = 0; i < 11; i++)
+    if (fname[0] == '.' && fname[1] == '.' && fname[2] == 0)
     {
-        formatted[i] = ' ';
+        // name = "..      "
+        out_name[0] = '.';
+        out_name[1] = '.';
+        for (int i = 2; i < 8; i++)
+            out_name[i] = ' ';
+
+        for (int i = 0; i < 3; i++)
+            out_ext[i] = ' ';
+
+        return;
     }
-    int i = 0, j = 0;
 
-    while (user_name[i] != '.' && user_name[i] != '\0' && j < 8)
-    {
-        char c = user_name[i++];
-        if (c >= 'a' && c <= 'z')
-            c -= 32;
-        formatted[j++] = c;
-    }
+    int i = 0;
+    int dot = -1;
 
-    if (user_name[i] == '.')
+    while (fname[i] != 0)
     {
-        i++;
-        j = 8;
-        while (user_name[i] != '\0' && j < 11)
+        if (fname[i] == '.')
         {
-            char c = user_name[i++];
-            if (c >= 'a' && c <= 'z')
-                c -= 32;
-            formatted[j++] = c;
+            dot = i;
+            break;
         }
+        i++;
     }
 
-    // Samotné porovnání 11 bajtů
-    for (int k = 0; k < 11; k++)
+    if (dot < 0)
     {
-        if (formatted[k] != fat_name[k])
-            return 0;
+        for (i = 0; i < 8; i++)
+            out_name[i] = ' ';
+        for (i = 0; i < 3; i++)
+            out_ext[i] = ' ';
+
+        i = 0;
+        while (fname[i] != 0 && i < 8)
+        {
+            out_name[i] = fname[i];
+            i++;
+        }
+        return;
     }
-    return 1;
+
+    for (i = 0; i < 8; i++)
+        out_name[i] = ' ';
+
+    int j;
+    for (j = 0; j < dot && j < 8; j++)
+    {
+        out_name[j] = fname[j];
+    }
+
+    for (i = 0; i < 3; i++)
+        out_ext[i] = ' ';
+
+    j = 0;
+    i = dot + 1;
+    while (fname[i] != 0 && j < 3)
+    {
+        out_ext[j] = fname[i];
+        j++;
+        i++;
+    }
 }
 
-Fat16Entry *find_file(const char* fname)
+
+int find_file(const char *fname, Fat16Entry *out_entry)
 {
     Fat16Entry entry;
 
     unsigned char buf[512];
+
+    char name[8];
+    char ext[3];
+    split_filename(fname, name, ext);
 
     if (current_dir_cluster == 0)
     {
@@ -129,10 +163,10 @@ Fat16Entry *find_file(const char* fname)
                 if (entries[j].filename[0] == 0xE5)
                     continue;
 
-                if (compare_fat_name(fname, (char *)entries[j].filename))
+                if ((strncmp((char *)entries[j].filename, name, 8)==0) && (strncmp((char *)entries[j].ext, ext, 3)==0))
                 {
-                    memcpy(&buf, &entries[j], sizeof(Fat16Entry));
-                    return (Fat16Entry*)&buf;
+                    memcpy(out_entry, &entries[j], sizeof(Fat16Entry));
+                    return 1;
                 }
             }
         }
@@ -157,10 +191,10 @@ Fat16Entry *find_file(const char* fname)
                     if (entries[j].filename[0] == 0xE5)
                         continue;
 
-                    if (compare_fat_name(fname, (char *)entries[j].filename))
+                    if ((strncmp((char *)entries[j].filename, name, 8)==0) && (strncmp((char *)entries[j].ext, ext, 3)==0))
                     {
-                        memcpy(&buf, &entries[j], sizeof(Fat16Entry));
-                        return (Fat16Entry*)&buf;
+                        memcpy(out_entry, &entries[j], sizeof(Fat16Entry));
+                        return 1;
                     }
                 }
             }
@@ -176,7 +210,8 @@ Fat16Entry *find_file(const char* fname)
 
 void change_dir(const char *dir)
 {
-    if (find_file("ddd.txt")==0)
+    Fat16Entry entry;
+    if (find_file(dir, &entry) == 0)
     {
         vga_print("FNF\n");
     }
