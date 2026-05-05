@@ -9,6 +9,8 @@ command_t shell_commands[] = {
     {"dump", "Hexdump of memory",cmd_dump},
     {"load","Load sector from lba to memory",cmd_load},
     {"run","Run program from memory",cmd_run},
+    {"ls","List current directory",cmd_ls},
+    {"cd","Changes directory",cmd_cd},
     {0, 0, 0} // Ukončovací prvek
 };
 
@@ -168,4 +170,21 @@ void cmd_run(char* args[])
     start_app();
 
     vga_print("\nBack from app.\n");
+}
+
+void cmd_ls(char* args[])
+{
+    vga_print("\n");
+    list_dir();
+}
+
+void cmd_cd(char* args[])
+{
+    if (args[1] == 0)
+    {
+        vga_print("\nNo directory given\n");
+        return;
+    }
+
+    change_dir(args[1]);
 }

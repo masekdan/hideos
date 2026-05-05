@@ -5,6 +5,7 @@
 #include "stdlib/string.h"
 
 #include "drivers/ide.h"
+#include "fs/fat16.h"
 
 // structures
 
@@ -31,6 +32,12 @@ void cmd_write(char* args[]);
 void cmd_dump(char* args[]);
 void cmd_load(char* args[]);
 void cmd_run(char* args[]);
+
+
+// fs commands
+
+void cmd_ls(char* args[]);
+void cmd_cd(char* args[]);
 
 // variables
 

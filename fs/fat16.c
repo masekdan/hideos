@@ -208,13 +208,44 @@ int find_file(const char *fname, Fat16Entry *out_entry)
     return 0;
 }
 
-void change_dir(const char *dir)
+int change_dir(const char *dir)
 {
     Fat16Entry entry;
-    if (find_file(dir, &entry) == 0)
+    
+    if (strcmp(dir,"..")==0)
     {
-        vga_print("FNF\n");
+        if (current_dir_cluster==0)
+        {
+            return 1;
+        }
+
+        if (find_file("..", &entry))
+        {
+            current_dir_cluster = entry.starting_cluster;
+            return 1;
+        }
+        return 0;
     }
+
+    if (!find_file(dir,&entry))
+    {
+        vga_print("\nDirectory ");
+        vga_print(dir);
+        vga_print(" not found.\n");
+        return 0;
+    }
+
+    if (!(entry.attributes & 0x10))
+    {
+        vga_print("\nEntry ");
+        vga_print(dir);
+        vga_print(" is not a directory\n");
+        return 0;
+    }
+    current_dir_cluster = entry.starting_cluster;
+    vga_print("\nDirectory changed\n");
+    return 1;
+
 }
 
 void list_dir()

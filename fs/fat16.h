@@ -1,3 +1,5 @@
+#ifndef FAT16_H
+#define FAT16_H
 
 #define MAX_DISK_SIZE (8*1024*1024)
 #define FAT16_PARTITION_LBA 2048
@@ -52,4 +54,8 @@ void fat_init(unsigned char drive);
 
 void list_dir();
 
-void change_dir(const char* dir);
+int change_dir(const char* dir);
+
+
+
+#endif
