@@ -29,6 +29,7 @@ __attribute__((section(".text.entry"))) void kernel_main()
 
     fat_init(0);
     list_dir();
+    change_dir("tst");
 
     cli_loop();
 
