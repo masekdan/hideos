@@ -8,5 +8,6 @@ kernel/*.o
 stdlib/*.o
 shell/*.o
 fs/*.o
+scheduler/*.o
 sd.img
 fat16.img
