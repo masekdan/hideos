@@ -25,7 +25,7 @@ __attribute__((section(".text.entry"))) void kernel_main()
     vga_print(" | |  | | | (_| |  __/ |__| |____) |\n");
     vga_print(" |_|  |_|_|\\__,_|\\___|\\____/|_____/ \n");
 
-    vga_print("\n\nPress help to view command list:\n");
+    vga_print("\nType help to view command list:\n");
 
     fat_init(0);
 

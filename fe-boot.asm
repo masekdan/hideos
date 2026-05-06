@@ -26,7 +26,7 @@ load_sector:
     mov bx, 0x1000  ; memory where sectors will be placed kernel
 
     mov ah, 0x02    ; read desiderd sectors into memory
-    mov al, 54      ; load 10 sectors
+    mov al, 54      ; load 54 sectors
     mov ch, 0       ; cylinder 0
     mov cl, 0x02    ; CC SSSSSS sector = 2
     mov dl, [ BOOT_DRIVE ]    ; drive number = 0 default drive C
@@ -88,10 +88,10 @@ protected_mode:
     mov fs, ax
     mov gs, ax
 
-    mov esp, 0x90000 ; stack
+    mov esp, 0x80000 ; stack
 
     ; DEBUG 2 – protected mode
-    mov dword [0xb8000], 0x07200750    ; 'P ' (0x20) a 'P' (0x50) s atributem 0x07
+    ;mov dword [0xb8000], 0x07200750    ; 'P ' (0x20) a 'P' (0x50) s atributem 0x07
 
     mov eax, 0x1000
     call eax

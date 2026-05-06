@@ -355,3 +355,48 @@ void read_file(const char* fname)
     }
     vga_print("\n");
 }
+
+void copy_to_memory(const char* fname, void *load_address)
+{
+    Fat16Entry entry;
+
+    if (find_file(fname, &entry)==0)
+    {
+        vga_print("\nFile not found\n");
+        return;
+    }
+
+    if (strncmp("BIN",entry.ext,3)==1)
+    {
+        vga_print("\nFile is not a program!\n");
+    }
+
+    vga_print("\n");
+    unsigned short cluster = entry.starting_cluster;
+    unsigned int remaining = entry.file_size;
+    unsigned char *dest = (unsigned char *)load_address;
+    unsigned char buf[512];
+
+    while (cluster < 0xFFF8 && remaining > 0)
+    {
+        unsigned int cluster_lba = data_lba_start + ((cluster - 2)*sectors_per_cluster);
+        
+        for (unsigned char s = 0; s < sectors_per_cluster && remaining > 0;s++)
+        {
+            ata_read_sector(0, cluster_lba + s, buf);
+
+            unsigned int to_copy = (remaining < 512) ? remaining : 512;
+
+            memcpy(dest, buf, to_copy);
+
+            dest += to_copy;
+            remaining -= to_copy;
+        }
+
+        cluster = get_fat_entry(cluster);
+
+        if (cluster == 0) break;
+        
+    }
+
+}

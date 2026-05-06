@@ -12,6 +12,7 @@ command_t shell_commands[] = {
     {"ls","List current directory",cmd_ls},
     {"cd","Changes directory",cmd_cd},
     {"cat","Writed file content to console",cmd_cat},
+    {"exec","Executed program (must be .BIN)",cmd_exec},
     {0, 0, 0} // Ukončovací prvek
 };
 
@@ -198,4 +199,19 @@ void cmd_cat(char* args[])
         return;
     }
     read_file(args[1]);
+}
+
+void cmd_exec(char* args[])
+{
+    if (args[1] == 0)
+    {
+        vga_print("\nNo file given\n");
+        return;
+    }
+
+    void *target_address = (void *)0x100000;
+    copy_to_memory(args[1],target_address);
+
+    ((void (*)(void))target_address)();
+
 }

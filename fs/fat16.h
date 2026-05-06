@@ -58,4 +58,6 @@ int change_dir(const char* dir);
 
 void read_file(const char* fname);
 
+void copy_to_memory(const char* fname, void *load_address);
+
 #endif
