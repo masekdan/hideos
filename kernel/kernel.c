@@ -9,6 +9,14 @@
 #include "shell/cli.h"
 #include "fs/fat16.h"
 
+int are_interrupts_enabled() {
+    unsigned long flags;
+    // Načte EFLAGS do proměnné flags
+    asm volatile ( "pushfl\n\t"
+                   "popl %0" : "=g"(flags) );
+    return (flags & 0x200); // 0x200 je maska pro 9. bit (2^9)
+}
+
 __attribute__((section(".text.entry"))) void kernel_main()
 {
 
@@ -28,6 +36,8 @@ __attribute__((section(".text.entry"))) void kernel_main()
     vga_print("\nType help to view command list:\n");
 
     fat_init(0);
+
+    print_int(are_interrupts_enabled());
 
     cli_loop();
 
