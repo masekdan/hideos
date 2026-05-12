@@ -73,7 +73,7 @@ $(KERNEL_BIN): $(KERNEL_ELF)
 	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
 
 # 4. Linkování kernelu do ELF
-$(KERNEL_ELF): $(OBJECTS)
+$(KERNEL_ELF): $(OBJECTS) $(GDT)
 	@echo "Linking kernel..."
 	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(OBJECTS)
 
@@ -81,6 +81,10 @@ $(KERNEL_ELF): $(OBJECTS)
 %.o: %.c
 	@echo "Compiling $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
+
+%.o: %.asm
+	@echo "Compiling $<..."
+	nasm -f elf32 $< -o $@
 
 # --- Pomocné cíle ---
 
