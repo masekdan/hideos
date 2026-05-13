@@ -15,20 +15,23 @@ KERNEL_ELF  = kernel.elf
 SRCDIR = .
 INCDIR = .
 
-# --- Detekce zdrojových souborů kernelu ---
-SOURCES = $(shell find $(SRCDIR) -name '*.c')
-SOURCES_ASM = $(shell find $(SRCDIR) -name '*.asm' ! -name 'fe-boot.asm') # Vynecháme bootloader
-OBJECTS = $(SOURCES_C:.c=.o) $(SOURCES_ASM:.asm=.o)
+# --- Detekce zdrojových souborů ---
+# C soubory
+SOURCES_C   = $(shell find $(SRCDIR) -name '*.c')
+OBJECTS_C   = $(SOURCES_C:.c=.o)
+
+# ASM soubory (pouze ty pro kernel, vynecháme bootloader)
+SOURCES_ASM = $(shell find $(SRCDIR) -name '*.asm' ! -name 'fe-boot.asm')
+OBJECTS_ASM = $(SOURCES_ASM:.asm=.o)
+
+# Všechny objekty dohromady pro linker
+ALL_OBJECTS = $(OBJECTS_C) $(OBJECTS_ASM)
 
 # --- Kompilační flagy ---
-# -m32: 32-bit kód
-# -ffreestanding: nepoužívat standardní knihovnu
-# -fno-pic: zakázat pozičně nezávislý kód (důležité pro kernel)
 CFLAGS = -m32 -ffreestanding -fno-pic -fno-stack-protector \
          -fno-asynchronous-unwind-tables -nostdlib -I$(INCDIR) -Wall -Wextra
 
 # --- Linkovací flagy ---
-# -T link.ld: cesta k tvému linker skriptu
 LDFLAGS = -m elf_i386 -T link.ld
 
 # --- Hlavní cíle ---
@@ -38,66 +41,50 @@ all: $(FINAL_IMAGE)
 # 1. Tvorba finálního SD obrazu
 $(FINAL_IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 	@echo "--- Creating 32MB raw disk image with MBR ---"
-	# Vytvoření prázdného souboru (32 MB)
 	dd if=/dev/zero of=$(FINAL_IMAGE) bs=1M count=32
-	
-	# Zápis MBR Partition Table pomocí sfdisk
-	# Vytvoří partition od sektoru 2048, typ 6 (FAT16), označí jako bootable (*)
 	@echo "2048,,6,*" | sfdisk $(FINAL_IMAGE) > /dev/null 2>&1
-
-	# Zápis kódu bootloaderu do MBR (pouze prvních 446 bajtů, abychom nepřepsali PT)
 	dd if=$(BOOT_BIN) of=$(FINAL_IMAGE) bs=446 count=1 conv=notrunc
-	
-	# Zápis signatury 0xAA55 na konec prvního sektoru (offset 510)
 	dd if=$(BOOT_BIN) of=$(FINAL_IMAGE) bs=1 skip=510 seek=510 count=2 conv=notrunc
-
-	# Zápis kernelu od sektoru 1 (LBA 1)
 	dd if=$(KERNEL_BIN) of=$(FINAL_IMAGE) bs=512 seek=1 conv=notrunc
-
-	# Pokud existuje fat16.img, vložíme ho na sektor 2048
 	@if [ -f $(FS_IMAGE) ]; then \
 		echo "Injecting FAT16 partition from $(FS_IMAGE)..."; \
 		dd if=$(FS_IMAGE) of=$(FINAL_IMAGE) bs=512 seek=2048 conv=notrunc; \
-	else \
-		echo "Warning: $(FS_IMAGE) not found, partition area at LBA 2048 will be empty."; \
 	fi
 	@echo "--- Build Finished: $(FINAL_IMAGE) is ready ---"
 
-# 2. Kompilace bootloaderu
+# 2. Kompilace bootloaderu (Flat binary)
 $(BOOT_BIN): fe-boot.asm
-	@echo "Assembling bootloader..."
-	$(NASM) -f bin fe-boot.asm -o $(BOOT_BIN)
+	@echo "Assembling bootloader: $<"
+	$(NASM) -f bin $< -o $@
 
-# 3. Ořezání ELF souboru na čistou binárku (flat binary)
+# 3. Ořezání ELF souboru na čistou binárku (flat binary pro kernel)
 $(KERNEL_BIN): $(KERNEL_ELF)
 	@echo "Stripping ELF to binary..."
 	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
 
 # 4. Linkování kernelu do ELF
-$(KERNEL_ELF): $(OBJECTS)
+# Zde je kritické, aby tam byly ALL_OBJECTS
+$(KERNEL_ELF): $(ALL_OBJECTS)
 	@echo "Linking kernel..."
-	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(OBJECTS)
+	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(ALL_OBJECTS)
 
-# 5. Generické pravidlo pro kompilaci .c souborů
-%.o: %.asm
-	@echo "Assembling ASM file: $<..."
-	$(NASM) -f elf32 $< -o $@
-
+# 5. Pravidlo pro kompilaci .c souborů
 %.o: %.c
-	@echo "Compiling $<..."
+	@echo "Compiling C: $<"
 	$(CC) $(CFLAGS) -c $< -o $@
 
-
+# 6. Pravidlo pro kompilaci .asm souborů (do objektového formátu ELF)
+%.o: %.asm
+	@echo "Assembling ASM: $<"
+	$(NASM) -f elf32 $< -o $@
 
 # --- Pomocné cíle ---
 
-# Vyčištění projektu
 clean:
 	@echo "Cleaning up..."
-	rm -f $(BOOT_BIN) $(KERNEL_BIN) $(KERNEL_ELF)
+	rm -f $(BOOT_BIN) $(KERNEL_BIN) $(KERNEL_ELF) $(FINAL_IMAGE)
 	find $(SRCDIR) -name '*.o' -delete
 
-# Spuštění v QEMU (volitelné, uprav podle potřeby)
 run: $(FINAL_IMAGE)
 	qemu-system-i386 -drive format=raw,file=$(FINAL_IMAGE)
 

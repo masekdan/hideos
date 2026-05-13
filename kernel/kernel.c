@@ -9,6 +9,9 @@
 #include "shell/cli.h"
 #include "fs/fat16.h"
 
+#include "arch/gdt.h"
+#include "arch/idt.h"
+
 int are_interrupts_enabled() {
     unsigned long flags;
     // Načte EFLAGS do proměnné flags
@@ -22,7 +25,12 @@ __attribute__((section(".text.entry"))) void kernel_main()
 
     vga_init();
     serial_init();
+    gdt_init();
+    idt_init();
+    //asm volatile("int $33");
+    asm volatile("sti");
 
+    
     vga_print("Welcome to HideOS\n");
     vga_print("LINE\n");
     vga_print("\n");

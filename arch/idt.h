@@ -16,6 +16,7 @@ struct idt_ptr_struct {
 
 extern void irq0_wrapper();
 extern void irq1_wrapper();
+extern void irq_ignore();
 
 
 void pic_remap();

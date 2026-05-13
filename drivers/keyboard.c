@@ -105,6 +105,7 @@ unsigned char keyboard_get_scancode()
 unsigned char keyboard_get_char()
 {
     unsigned char scancode = keyboard_get_scancode();
+    //unsigned char scancode = inb(0x60);
 
     if (scancode & 0x80) {
         return 0; 

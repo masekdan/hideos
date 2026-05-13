@@ -7,6 +7,6 @@ typedef struct {
     unsigned int eip, cs, eflags, useresp, ss;
 } registers_t;
 
-void irq_handler(registers_t regs);
+void irq_handler(registers_t* regs);
 
 #endif

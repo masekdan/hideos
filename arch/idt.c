@@ -17,6 +17,8 @@ void pic_remap()
     outb(0xA1, 0x01);
     outb(0x21, 0x0);  // Povolit všechna přerušení (masky)
     outb(0xA1, 0x0);
+    //outb(0x21,0xFD);
+    //outb(0xA1,0xFF);
 }
 
 
@@ -40,6 +42,10 @@ void idt_init()
     memset(&idt,0,sizeof(struct idt_entry_struct)*256);
 
     pic_remap();
+
+    for(int i = 0; i < 256; i++) { // ignore ostarnich preruseni
+        idt_set_gate(i, (unsigned int)irq_ignore, 0x08, 0x8e);
+    }
 
     idt_set_gate(32, (unsigned int)irq0_wrapper, 0x08, 0x8e);
     idt_set_gate(33, (unsigned int)irq1_wrapper, 0x08, 0x8e);
