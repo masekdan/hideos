@@ -17,7 +17,8 @@ INCDIR = .
 
 # --- Detekce zdrojových souborů kernelu ---
 SOURCES = $(shell find $(SRCDIR) -name '*.c')
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES_ASM = $(shell find $(SRCDIR) -name '*.asm' ! -name 'fe-boot.asm') # Vynecháme bootloader
+OBJECTS = $(SOURCES_C:.c=.o) $(SOURCES_ASM:.asm=.o)
 
 # --- Kompilační flagy ---
 # -m32: 32-bit kód
@@ -73,18 +74,20 @@ $(KERNEL_BIN): $(KERNEL_ELF)
 	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
 
 # 4. Linkování kernelu do ELF
-$(KERNEL_ELF): $(OBJECTS) $(GDT)
+$(KERNEL_ELF): $(OBJECTS)
 	@echo "Linking kernel..."
 	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(OBJECTS)
 
 # 5. Generické pravidlo pro kompilaci .c souborů
+%.o: %.asm
+	@echo "Assembling ASM file: $<..."
+	$(NASM) -f elf32 $< -o $@
+
 %.o: %.c
 	@echo "Compiling $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
 
-%.o: %.asm
-	@echo "Compiling $<..."
-	nasm -f elf32 $< -o $@
+
 
 # --- Pomocné cíle ---
 
